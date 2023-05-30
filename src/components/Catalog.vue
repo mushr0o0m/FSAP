@@ -24,7 +24,7 @@ export default {
         const allProducts = computed(() => store.getters.getAllProducts);
 
         onMounted(() => {
-        store.dispatch('fetchAllProducts');
+            store.dispatch('fetchAllProducts');
         });
 
         const addToCart = ((data) =>{

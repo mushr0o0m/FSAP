@@ -24,6 +24,8 @@
   
 <script>
 
+import { toRef } from 'vue';
+
 export default {
   name: 'v-catalog-item',
   components: {
@@ -39,12 +41,26 @@ export default {
   data() {
     return {}
   },
-  computed: {},
-  methods: {
-    addToCart() {
-      this.$emit('addToCart', this.product_data);
-    }
-  }
+  setup(props, context){
+    const product_item = toRef(props, 'product_data');
+
+    const setQuantity = () => {
+      product_item.value['quantity'] = 1;
+    };
+
+    // onMounted(() => {
+    //   setQuantity();
+    // })
+
+    const addToCart = (() => {
+      setQuantity();
+      context.emit('addToCart', props.product_data)
+    })
+
+    return{
+      addToCart,
+    };
+  },
 }
 </script>
 <style scoped>
