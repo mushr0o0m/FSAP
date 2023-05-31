@@ -1,7 +1,13 @@
 <template>
   <div class="v-catalog-item col">
     <div class="card shadow-sm h-100">
-      <a class="card__link" href="#"></a>
+      <router-link class="card__link"
+       :to="{
+        name: 'catalogItemPage',
+        path: `/catalog/${product_data.id}`,
+        params: { id:product_data.id},
+        }">
+      </router-link>
       <div class="card-header">
         <h4 class="my-0 font-weight-normal">{{ product_data.title }}</h4>
       </div>
@@ -48,20 +54,16 @@ export default {
       product_item.value['quantity'] = 1;
     };
 
-    // onMounted(() => {
-    //   setQuantity();
-    // })
-
     const addToCart = (() => {
       setQuantity();
-      context.emit('addToCart', props.product_data)
+      context.emit('addToCart', props.product_data);
     })
 
     return{
       addToCart,
     };
   },
-}
+} 
 </script>
 <style scoped>
 img {

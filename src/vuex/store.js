@@ -7,6 +7,7 @@ const store = createStore({
     allProducts: [], // Состояние для хранения всех товаров
     cart: [], // Состояние для хранения товаров в карзине
     categories: [], // Состояние для хранения категорий товаров
+    product: {}
   },
   mutations: {
     setProducts(state, products) {
@@ -14,6 +15,12 @@ const store = createStore({
     },
     setAllProducts(state, allProducts) {
       state.allProducts = allProducts;
+    },
+    setProduct(state, product){
+      state.product = product;
+    },
+    destroyProduct(state){
+      state.product = {};
     },
     setCategories(state, categories) {
       state.categories = categories.map((x) => x[0].toUpperCase() + x.slice(1).toLowerCase());
@@ -87,6 +94,15 @@ const store = createStore({
           console.error('Ошибка при получении следующих товаров:', error);
         }
     },
+    async fetchProductById({ commit }, id) {
+      try {
+        const response = await fetch(`https://fakestoreapi.com/products/${id}`);
+        const product = await response.json();
+        commit('setProduct', product);
+      } catch (error) {
+        console.error(`Ошибка при получении товара имеющего id:${id}:`, error);
+      }
+    },
     ADD_TO_CART({commit}, product){
       commit('SET_CART', product.data);
     },
@@ -96,8 +112,8 @@ const store = createStore({
     
   },
   getters: {
-    getProductById: (state) => (id) => {
-      return state.products.find((product) => product.id === id);
+    getProductById: (state) => {
+      return state.product;
     },
     getAllProducts: (state) => {
       return state.allProducts;
