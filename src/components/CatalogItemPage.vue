@@ -64,12 +64,7 @@ export default {
     const onImageLoad = () => {
       isImageLoading.value = false;
     };
-
-    const setQuantity = () => {
-      product.value['quantity'] = 1;
-    };
     const addToCart = (() => {
-      setQuantity();
       store.dispatch('ADD_TO_CART', {data: product.value});
     });
 

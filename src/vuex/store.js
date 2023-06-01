@@ -3,18 +3,21 @@ import { createStore } from 'vuex'
 
 const store = createStore({
   state: {
-    products: [], // Состояние для хранения товаров
     allProducts: [], // Состояние для хранения всех товаров
     cart: [], // Состояние для хранения товаров в карзине
     categories: [], // Состояние для хранения категорий товаров
-    product: {}
+    product: {}, // Состояние для хранения товара по id
   },
   mutations: {
     setProducts(state, products) {
       state.products = products;
     },
     setAllProducts(state, allProducts) {
-      state.allProducts = allProducts;
+      state.allProducts = allProducts.map((product) =>{
+        product['quantity'] = 0;
+        product['isFavorites'] = localStorage[product.id] === 'true';
+        return product;
+      });
     },
     setProduct(state, product){
       state.product = product;
@@ -31,13 +34,15 @@ const store = createStore({
         state.cart.map((item) => {
           if(item.id === product.id){
             isProductExists = true;
-            item.quantity++
+            item.quantity++;
           }
         });
         if (!isProductExists){
+          product.quantity = 1;
           state.cart.push(product);
         }
       } else {
+        product.quantity = 1;
         state.cart.push(product);
       }
     },
@@ -53,6 +58,19 @@ const store = createStore({
       if(state.cart[id].quantity <= 0){
         state.cart.splice(id, 1);
       }
+    },
+    SAVE_FAVORITES_TO_LOCAL(state){
+      state.allProducts.map((product) => {
+        localStorage[product.id] = product.isFavorites;
+      });
+    },
+    SET_FAVORITES(state, id){
+      state.allProducts.map((product) => {
+        if (product.id === id){
+          product.isFavorites = !product.isFavorites;
+          console.log(product.isFavorites)
+        }
+      });
     }
   },
   actions: {
@@ -74,26 +92,26 @@ const store = createStore({
         console.error('Ошибка при получении товаров:', error);
       }
     },
-    async fetchProducts({ commit }) {
-      try {
-        const response = await fetch('https://fakestoreapi.com/products?limit=10');
-        const products = await response.json();
-        commit('setProducts', products);
-      } catch (error) {
-        console.error('Ошибка при получении всех товаров:', error);
-      }
-    },
-    async fetchNextProducts({ commit, state }) {
-        try {
-          const offset = state.allProducts.length;
-          const response = await fetch(`https://fakestoreapi.com/products?limit=10&offset=${offset}`);
-          const nextProducts = await response.json();
-          const updatedProducts = [...state.allProducts, ...nextProducts];
-          commit('setAllProducts', updatedProducts);
-        } catch (error) {
-          console.error('Ошибка при получении следующих товаров:', error);
-        }
-    },
+    // async fetchProducts({ commit }) {
+    //   try {
+    //     const response = await fetch('https://fakestoreapi.com/products?limit=10');
+    //     const products = await response.json();
+    //     commit('setProducts', products);
+    //   } catch (error) {
+    //     console.error('Ошибка при получении всех товаров:', error);
+    //   }
+    // },
+    // async fetchNextProducts({ commit, state }) {
+    //     try {
+    //       const offset = state.allProducts.length;
+    //       const response = await fetch(`https://fakestoreapi.com/products?limit=10&offset=${offset}`);
+    //       const nextProducts = await response.json();
+    //       const updatedProducts = [...state.allProducts, ...nextProducts];
+    //       commit('setAllProducts', updatedProducts);
+    //     } catch (error) {
+    //       console.error('Ошибка при получении следующих товаров:', error);
+    //     }
+    // },
     async fetchProductById({ commit }, id) {
       try {
         const response = await fetch(`https://fakestoreapi.com/products/${id}`);
@@ -109,7 +127,6 @@ const store = createStore({
     DELETE_CART_ITEM({commit}, id){
       commit('REMOVE_CART', id);
     },
-    
   },
   getters: {
     getProductById: (state) => {
@@ -121,12 +138,14 @@ const store = createStore({
     GET_CART(state){
       return state.cart;
     },
-    GET_CART_TOTAL_QUANTITY(state){
+    GET_CART_TOTAL(state){
       let count = 0;
+      let sum = 0;
       state.cart.map((item) => {
         count += item.quantity;
+        sum += item.quantity * item.price;
       })
-      return count;
+      return {count, sum};
     },
     GET_CATEGORIES(state){
       return state.categories;

@@ -5,6 +5,7 @@
          :key="product.id"
          :product_data="product"
          @addToCart = "addToCart"
+         @toggleFavorite = "toggleFavorite"
         />
     </div>
 </template>
@@ -33,14 +34,19 @@ export default {
             store.dispatch('fetchAllProducts');
         });
         const addToCart = ((data) =>{
-            console.log(data)
             store.dispatch('ADD_TO_CART', {
                 data
             });
         });
 
+        const toggleFavorite = ((data) => {
+            store.commit('SET_FAVORITES', data.id, data.isFavorite);
+            store.commit('SAVE_FAVORITES_TO_LOCAL');
+        })
+
         return {
          addToCart,
+         toggleFavorite
         };
     }
 };

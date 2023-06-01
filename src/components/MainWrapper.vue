@@ -59,8 +59,8 @@
                 <router-link :to="{ name: 'cart' }" class="nav-link position-relative">
                   <i class="bi bi-cart4 nav-icon "></i>
                   <span class="position-absolute translate-middle badge rounded-pill bg-danger"
-                    v-if="cartTotalQuantity > 0">
-                    {{ cartTotalQuantity }}
+                    v-if="cartTotalQuantity.count > 0">
+                    {{ cartTotalQuantity.count }}
                   </span>
                 </router-link>
               </li>
@@ -186,11 +186,10 @@ export default {
       return allProducts;
     });
 
-    const cartTotalQuantity = computed(() => store.getters.GET_CART_TOTAL_QUANTITY);
+    const cartTotalQuantity = computed(() => store.getters.GET_CART_TOTAL);
     const categories = computed(() => store.getters.GET_CATEGORIES);
-    
+
     onMounted(() => {
-      
       store.dispatch('FETCH_CATEGORIES');
 
       const searchInput = document.querySelector('form input[type="search"]');

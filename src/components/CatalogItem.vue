@@ -19,7 +19,9 @@
           class="btn btn-lg btn-block btn-outline-primary me-2" 
           @click="addToCart"
           >Add to cart</button>
-          <button class="btn btn-lg btn-outline-primary" data-bs-toggle="button">
+          <button class="btn btn-lg btn-outline-primary" data-bs-toggle="button"
+          :class="product_data.isFavorites ? 'active' : ''"
+          @click="toggleFavorite">
             <i class="bi bi-star-fill"></i>
           </button>
         </div>
@@ -29,8 +31,6 @@
 </template>
   
 <script>
-
-import { toRef } from 'vue';
 
 export default {
   name: 'v-catalog-item',
@@ -48,19 +48,18 @@ export default {
     return {}
   },
   setup(props, context){
-    const product_item = toRef(props, 'product_data');
-
-    const setQuantity = () => {
-      product_item.value['quantity'] = 1;
-    };
 
     const addToCart = (() => {
-      setQuantity();
       context.emit('addToCart', props.product_data);
-    })
+    });
+
+    const toggleFavorite = (() =>{
+      context.emit('toggleFavorite', props.product_data);
+    });
 
     return{
       addToCart,
+      toggleFavorite
     };
   },
 } 
