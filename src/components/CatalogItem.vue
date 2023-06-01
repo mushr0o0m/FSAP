@@ -5,7 +5,7 @@
        :to="{
         name: 'catalogItemPage',
         path: `/catalog/${product_data.id}`,
-        params: { id:product_data.id},
+        params: { id:product_data.id },
         }">
       </router-link>
       <div class="card-header">
@@ -16,19 +16,23 @@
         <div>
           <h2 class="card-title pricing-card-title">{{ product_data.price }} $</h2>
           <button 
-          class="btn btn-lg btn-block btn-outline-primary me-2" 
-          @click="addToCart"
-          v-if="product_data.quantity === 0"
+            class="btn btn-lg btn-block btn-outline-primary me-2" 
+            @click="addToCart"
+            v-if="!cartItem"
           >Add to cart</button>
           <cart-btn-group
-          class="d-inline-block btn-group-lg me-2"
-          :cart_item="product_data"
-          v-if="product_data.quantity > 0"
-          @decremntCart="decremntCart"
-          @incremntCart="incremntCart"/>
-          <button class="btn btn-lg btn-outline-primary" data-bs-toggle="button"
-          :class="product_data.isFavorites ? 'active' : ''"
-          @click="toggleFavorite">
+            class="d-inline-block btn-group-lg me-2"
+            :cart_item="cartItem"
+            v-if="cartItem"
+            @decremntCart="decremntCart"
+            @incremntCart="incremntCart"
+          />
+          <button 
+            class="btn btn-lg btn-outline-primary" 
+            data-bs-toggle="button"
+            :class="product_data.isFavorites ? 'active' : ''"
+            @click="toggleFavorite"
+          >
             <i class="bi bi-star-fill"></i>
           </button>
         </div>
@@ -40,6 +44,8 @@
 <script>
 
 import CartBtnGroup from '@/components/CartBtnGroup.vue'
+import { computed } from 'vue';
+import { useStore } from 'vuex';
 
 export default {
   name: 'v-catalog-item',
@@ -59,6 +65,7 @@ export default {
     return {}
   },
   setup(props, context){
+    const store = useStore();
 
     const addToCart = (() => {
       context.emit('addToCart', props.product_data);
@@ -67,7 +74,10 @@ export default {
     const toggleFavorite = (() =>{
       context.emit('toggleFavorite', props.product_data);
     });
-    
+
+    const getCartItem = computed(() =>
+      store.getters.GET_PRODUCT_CART(props.product_data.id));
+
     const decremntCart = (() => {
         context.emit('decremntCart', props.product_data);
     });
@@ -80,6 +90,7 @@ export default {
       toggleFavorite,
       incremntCart,
       decremntCart,
+      cartItem: getCartItem
     };
   },
 } 

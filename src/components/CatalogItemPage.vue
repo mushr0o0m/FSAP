@@ -1,6 +1,11 @@
 <template>
-  <div class="v-catalog-item-page row text-start">
-    <h1 class="mb-3 text-primary col-12">{{ product.title }}</h1>
+  <div class="v-catalog-item-page">
+    <div v-if="!product" 
+      class="alert alert-warning" role="alert">
+          Loading...
+    </div>
+    <div class="row text-start" v-if="product">
+      <h1 class="mb-3 text-primary col-12">{{ product.title }}</h1>
     <div class="col-12 col-md-4 d-flex justify-content-center">
       <img class="bd-placeholder-img card-img-top mb-3 object-fit-contain mw-md-50" :src="product.image"
         @load="onImageLoad">
@@ -16,63 +21,98 @@
     <div class="col-12 col-md-4 d-flex flex-column align-items-center">
       <div class="mb-3 text-center">
         <h2 class="card-title pricing-card-title mb-1">{{ product.price }} $</h2>
-        <span v-if="product.rating?.rate" class="text-mute">{{ product.rating?.rate }}/5 ({{ product.rating?.count
-        }})</span>
+        <span v-if="product.rating?.rate" class="text-mute">{{ product.rating?.rate }}/5 {{ product.rating?.count
+        }} reviews</span>
       </div>
       <div>
-        <button class="btn btn-lg btn-outline-primary me-3" @click="addToCart">Add to cart</button>
-        <button class="btn btn-lg btn-outline-primary" data-bs-toggle="button">
+        <button class="btn btn-lg btn-outline-primary me-3"
+        v-if="!cartItem"
+        @click="addToCart">Add to cart</button>
+        <cart-btn-group
+          class="d-inline-block btn-group-lg me-3"
+          :cart_item="cartItem"
+          v-if="cartItem"
+          @decremntCart="decremntCart"
+          @incremntCart="incremntCart"
+        />
+        <button 
+          class="btn btn-lg btn-outline-primary" 
+          data-bs-toggle="button"
+          :class="product.isFavorites ? 'active' : ''"
+          @click="toggleFavorite"
+        >
           <i class="bi bi-star-fill"></i>
         </button>
       </div>
+    </div>
     </div>
   </div>
 </template>
   
 <script>
 
+import CartBtnGroup from '@/components/CartBtnGroup.vue'
 import { useStore } from 'vuex';
-import { onBeforeMount, computed, onUnmounted, ref } from 'vue';
+import { useRoute } from 'vue-router';
+import { computed, ref, onBeforeMount } from 'vue';
 
 export default {
   name: 'v-catalog-item-page',
   components: {
+    CartBtnGroup
   },
   props: {
     id: {
-      type: Number,
+      type: String,
       default() {
-        return 0
+        return '0';
       }
     }
   },
   data() {
     return {}
   },
-  setup(props) {
+  setup() {
+    const route = useRoute();
     const store = useStore();
+    const id = Number(route.params.id);
     const isImageLoading = ref(true);
-
+    
     onBeforeMount(() => {
-      store.dispatch('fetchProductById', props.id);
+      console.log('hi')
+      store.dispatch('fetchAllProducts');
     });
-    onUnmounted(() => {
-      store.commit('destroyProduct');
-    });
-
-    const product = computed(() => store.getters.getProductById);
+    const product = computed(() => store.getters.getProductById(id));
     const onImageLoad = () => {
       isImageLoading.value = false;
     };
+
     const addToCart = (() => {
-      store.dispatch('ADD_TO_CART', {data: product.value});
+      store.dispatch('ADD_TO_CART', { data: product.value });
+    });
+
+    const cartItem = computed(() =>
+     store.getters.GET_PRODUCT_CART(id));
+
+    const incremntCart = (() => {
+      store.commit('INCREMENT_CART', id);
+    });
+    const decremntCart = (() => {
+      store.commit('DECREMENT_CART', id);
+    });
+    const toggleFavorite = (() => {
+        store.dispatch('ADD_TO_FAVORITES', id);
     });
 
     return {
       product,
       onImageLoad,
       isImageLoading,
-      addToCart
+      cartItem,
+      addToCart,
+      incremntCart,
+      decremntCart,
+      toggleFavorite,
     }
   },
 }

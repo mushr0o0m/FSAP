@@ -46,13 +46,13 @@ export default {
     },
     setup(props, context) {
         const deleteFromCart = (() => {
-            context.emit('deleteFromCart');
+            context.emit('deleteFromCart', props.cart_item.id);
         });
         const decremntCart = (() => {
-            context.emit('decremntCart');
+            context.emit('decremntCart', props.cart_item.id);
         });
         const incremntCart = (() => {
-            context.emit('incremntCart');
+            context.emit('incremntCart', props.cart_item.id);
         });
 
         return{

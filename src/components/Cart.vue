@@ -12,12 +12,12 @@
         </div>
         <ul class="list-group mb-3">
             <cart-item
-                v-for="(cartItem, id) in cartList" 
+                v-for="cartItem in cartList" 
                 :key="cartItem.id"
                 :cart_item="cartItem"
-                @deleteFromCart="deleteFromCart(id)"
-                @decremntCart="decremntCart(id)"
-                @incremntCart="incremntCart(id)"
+                @deleteFromCart="deleteFromCart"
+                @decremntCart="decremntCart"
+                @incremntCart="incremntCart"
             />
             <li class="list-group-item d-flex justify-content-between"
             v-if="cartTotalQuantity.count > 0">
@@ -43,7 +43,7 @@ export default {
         const cartList = computed(() => store.getters.GET_CART);
         const cartTotalQuantity = computed(() => store.getters.GET_CART_TOTAL);
         const deleteFromCart = ((id) => {
-            store.dispatch('DELETE_CART_ITEM', id);
+            store.commit('REMOVE_CART', id);
         });
         const incremntCart = ((id) => {
             store.commit('INCREMENT_CART', id);

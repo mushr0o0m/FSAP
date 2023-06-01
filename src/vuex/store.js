@@ -6,24 +6,14 @@ const store = createStore({
     allProducts: [], // Состояние для хранения всех товаров
     cart: [], // Состояние для хранения товаров в карзине
     categories: [], // Состояние для хранения категорий товаров
-    product: {}, // Состояние для хранения товара по id
   },
   mutations: {
-    setProducts(state, products) {
-      state.products = products;
-    },
     setAllProducts(state, allProducts) {
       state.allProducts = allProducts.map((product) =>{
-        product['quantity'] = 0;
+        product['quantity'] = product.quantity || 0;
         product['isFavorites'] = localStorage[product.id] === 'true';
         return product;
       });
-    },
-    setProduct(state, product){
-      state.product = product;
-    },
-    destroyProduct(state){
-      state.product = {};
     },
     setCategories(state, categories) {
       state.categories = categories.map((x) => x[0].toUpperCase() + x.slice(1).toLowerCase());
@@ -47,17 +37,28 @@ const store = createStore({
       }
     },
     REMOVE_CART: (state, id) =>{
-      state.cart.splice(id, 1);
+      state.cart.forEach((cartItem, index) => {
+        if(cartItem.id === id){
+          state.cart.splice(index, 1);
+        }
+      });
     },
     INCREMENT_CART: (state, id) =>{
-      state.cart[id].quantity++;
+      state.cart.forEach((cartItem) => {
+        if(cartItem.id === id){
+          cartItem.quantity++;
+        }
+      });
     },
     DECREMENT_CART: (state, id) =>{
-      state.cart[id].quantity--;
-
-      if(state.cart[id].quantity <= 0){
-        state.cart.splice(id, 1);
-      }
+      state.cart.forEach((cartItem, index) => {
+        if(cartItem.id === id){
+          cartItem.quantity--;
+          if(cartItem.quantity <= 0){
+            state.cart.splice(index, 1);
+          }
+        }
+      });
     },
     SAVE_FAVORITES_TO_LOCAL(state){
       state.allProducts.map((product) => {
@@ -68,7 +69,6 @@ const store = createStore({
       state.allProducts.map((product) => {
         if (product.id === id){
           product.isFavorites = !product.isFavorites;
-          console.log(product.isFavorites)
         }
       });
     }
@@ -112,33 +112,26 @@ const store = createStore({
     //       console.error('Ошибка при получении следующих товаров:', error);
     //     }
     // },
-    async fetchProductById({ commit }, id) {
-      try {
-        const response = await fetch(`https://fakestoreapi.com/products/${id}`);
-        const product = await response.json();
-        commit('setProduct', product);
-      } catch (error) {
-        console.error(`Ошибка при получении товара имеющего id:${id}:`, error);
-      }
-    },
     ADD_TO_CART({commit}, product){
       commit('SET_CART', product.data);
     },
-    DELETE_CART_ITEM({commit}, id){
-      commit('REMOVE_CART', id);
-    },
+    ADD_TO_FAVORITES({commit}, id){
+      commit('SET_FAVORITES', id);
+      commit('SAVE_FAVORITES_TO_LOCAL');
+    }
   },
   getters: {
-    getProductById: (state) => {
-      return state.product;
+    getProductById: (state) => (id) => {
+      console.log(state.allProducts)
+      return state.allProducts.find((product) => product.id === id);
     },
     getAllProducts: (state) => {
       return state.allProducts;
     },
-    GET_CART(state){
+    GET_CART: (state) =>{
       return state.cart;
     },
-    GET_CART_TOTAL(state){
+    GET_CART_TOTAL: (state) =>{
       let count = 0;
       let sum = 0;
       state.cart.map((item) => {
@@ -147,8 +140,14 @@ const store = createStore({
       })
       return {count, sum};
     },
-    GET_CATEGORIES(state){
+    GET_CATEGORIES: (state) =>{
       return state.categories;
+    },
+    GET_PRODUCT_CART: (state) => (id) => {
+      const cartItem = state.cart.filter((cartItem) => {
+        return id === cartItem.id;
+      });
+      return cartItem[0];
     }
   }
 });

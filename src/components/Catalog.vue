@@ -15,7 +15,7 @@
 <script>
 import CatalogItem from '@/components/CatalogItem.vue'
 import { useStore } from 'vuex';
-import { onMounted, computed } from 'vue';
+import { onMounted } from 'vue';
 
 export default {
     name: 'v-catalog',
@@ -41,26 +41,15 @@ export default {
             });
         });
 
-        const cart = computed(() => store.getters.GET_CART);
-
-        const getIdCartItem = ((id) => 
-            cart.value.findIndex((cartItem) => cartItem.id === id)
-        );
-
         const incremntCart = ((data) => {
-        console.log(getIdCartItem)
-            store.commit('INCREMENT_CART', getIdCartItem(data.id));
+            store.commit('INCREMENT_CART', data.id);
         });
         const decremntCart = ((data) => {
-        console.log(getIdCartItem)
-            store.commit('DECREMENT_CART', getIdCartItem(data.id));
+            store.commit('DECREMENT_CART', data.id);
         });
 
-
-        const toggleFavorite = ((data) => {
-            store.commit('SET_FAVORITES', data.id, data.isFavorite);
-            store.commit('SAVE_FAVORITES_TO_LOCAL');
-        })
+        const toggleFavorite = ((data) => 
+        store.dispatch('ADD_TO_FAVORITES', data.id));
 
         return {
          addToCart,
