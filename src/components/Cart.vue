@@ -2,8 +2,14 @@
     <div class="v-cart">
         <h4 class="d-flex justify-content-between align-items-center mb-3">
             <span class="text-primary">Your cart</span>
-            <span class="badge bg-primary rounded-pill">{{ cartTotalQuantity }}</span>
+            <span class="badge bg-primary rounded-pill"
+            v-if="cartTotalQuantity.count > 0"
+            >{{ cartTotalQuantity.count }}</span>
         </h4>
+        <div v-if="cartTotalQuantity.count === 0" 
+        class="alert alert-primary" role="alert">
+            Your cart is empty! Go shopping!
+        </div>
         <ul class="list-group mb-3">
             <cart-item
                 v-for="(cartItem, id) in cartList" 
@@ -13,10 +19,11 @@
                 @decremntCart="decremntCart(id)"
                 @incremntCart="incremntCart(id)"
             />
-            <!-- <li class="list-group-item d-flex justify-content-between">
-                <span>Всего (РУБ)</span>
-                <strong>2000₽</strong>
-            </li> -->
+            <li class="list-group-item d-flex justify-content-between"
+            v-if="cartTotalQuantity.count > 0">
+                <span>Total (USD)</span>
+                <strong>{{ cartTotalQuantity.sum.toFixed(2) }}$</strong>
+            </li>
         </ul>
     </div>
 </template>
@@ -34,7 +41,7 @@ export default {
     setup(){
         const store = useStore();
         const cartList = computed(() => store.getters.GET_CART);
-        const cartTotalQuantity = computed(() => store.getters.GET_CART_TOTAL_QUANTITY);
+        const cartTotalQuantity = computed(() => store.getters.GET_CART_TOTAL);
         const deleteFromCart = ((id) => {
             store.dispatch('DELETE_CART_ITEM', id);
         });

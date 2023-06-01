@@ -11,15 +11,11 @@
                 <h5 class="my-0">{{ cart_item.price }}$</h5>
             </div>
             <div class="control d-flex justify-content-end col ms-auto">
-                <div class="btn-group me-3" role="group">
-                    <button type="button" class="btn btn-outline-primary" @click="decremntCart">
-                        <i class="bi bi-dash"></i>
-                    </button>
-                    <span class="btn btn-outline-primary">{{ cart_item.quantity }}</span>
-                    <button type="button" class="btn btn-outline-primary" @click="incremntCart">
-                        <i class="bi bi-plus"></i>
-                    </button>
-                </div>
+                <cart-btn-group
+                    class="me-3"
+                    :cart_item="cart_item"
+                    @decremntCart="decremntCart"
+                    @incremntCart="incremntCart"/>
                 <button type="button" class="btn btn-outline-danger" @click="deleteFromCart">
                     Delete
                 </button>
@@ -30,10 +26,12 @@
     
 <script>
 
+import CartBtnGroup from '@/components/CartBtnGroup.vue'
 
 export default {
     name: 'v-cart-item',
     components: {
+        CartBtnGroup
     },
     data() {
         return {}

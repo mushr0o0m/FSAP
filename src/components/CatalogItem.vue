@@ -18,7 +18,14 @@
           <button 
           class="btn btn-lg btn-block btn-outline-primary me-2" 
           @click="addToCart"
+          v-if="product_data.quantity === 0"
           >Add to cart</button>
+          <cart-btn-group
+          class="d-inline-block btn-group-lg me-2"
+          :cart_item="product_data"
+          v-if="product_data.quantity > 0"
+          @decremntCart="decremntCart"
+          @incremntCart="incremntCart"/>
           <button class="btn btn-lg btn-outline-primary" data-bs-toggle="button"
           :class="product_data.isFavorites ? 'active' : ''"
           @click="toggleFavorite">
@@ -32,10 +39,14 @@
   
 <script>
 
+import CartBtnGroup from '@/components/CartBtnGroup.vue'
+
 export default {
   name: 'v-catalog-item',
   components: {
+    CartBtnGroup
   },
+
   props: {
     product_data: {
       type: Object,
@@ -56,10 +67,19 @@ export default {
     const toggleFavorite = (() =>{
       context.emit('toggleFavorite', props.product_data);
     });
+    
+    const decremntCart = (() => {
+        context.emit('decremntCart', props.product_data);
+    });
+    const incremntCart = (() => {
+        context.emit('incremntCart', props.product_data);
+    });
 
     return{
       addToCart,
-      toggleFavorite
+      toggleFavorite,
+      incremntCart,
+      decremntCart,
     };
   },
 } 

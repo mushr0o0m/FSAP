@@ -51,7 +51,8 @@
             </form>
             <ul class="navbar-nav">
               <li class="nav-item">
-                <router-link :to="{ name: 'catalog'}" class="nav-link">
+                <router-link :to="{ name: 'catalog'}" class="nav-link"
+                :class="$route.path === '/' ? 'active' : ''">
                   <i class="bi bi-house nav-icon"></i>
                 </router-link>
               </li>
@@ -63,13 +64,15 @@
                     {{ cartTotalQuantity.count }}
                   </span>
                 </router-link>
+                </li>
+              <li class="nav-item">
+                <span class="nav-link" style="cursor: pointer;"
+                :class="filterParams.isFavoritesOnly && $route.path === '/' ? 'active' : ''"
+                @click="toggleFavoritesOnly">
+                  <i class="bi bi-star nav-icon"></i>
+                </span>
               </li>
-              <!-- <li class="nav-item">
-            <router-link :to="{name: 'catalog'}" class="nav-link">
-              <i class="bi bi-star nav-icon"></i>
-            </router-link>
-          </li> -->
-            </ul>
+                </ul>
           </div>
         </div>
       </nav>
@@ -126,7 +129,8 @@ export default {
       commonFilterTypes,
       categoryName: '',
       commonFilterName: '',
-      searchRequest: ''
+      searchRequest: '',
+      isFavoritesOnly: false
     });
     const setCommonFilter = ((title) =>{
       filterParams.value.commonFilterName = 
@@ -142,6 +146,10 @@ export default {
       filterParams.value.searchRequest = request ? request.toLowerCase() : '';
       toCatalog();
     });
+    const toggleFavoritesOnly = (() =>{
+      filterParams.value.isFavoritesOnly = !filterParams.value.isFavoritesOnly;
+      toCatalog();
+    });
     const resetFilterParams = (() =>{
       filterParams.value.categoryName = '';
       filterParams.value.commonFilterName = '';
@@ -153,6 +161,10 @@ export default {
     });
     const toFilterProducts = computed(() => {
       let allProducts = store.getters.getAllProducts;
+
+      if (filterParams.value.isFavoritesOnly) {
+        allProducts = allProducts.filter((item) => item.isFavorites);
+      }
 
       if (filterParams.value.searchRequest) {
         allProducts = allProducts.filter((item) => {
@@ -215,6 +227,7 @@ export default {
       setCommonFilter,
       setCategoryFilter,
       setSearchRequest,
+      toggleFavoritesOnly,
     }
   }
 }
