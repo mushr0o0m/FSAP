@@ -63,7 +63,7 @@ export default {
         const router = useRouter();
 
         onMounted(() => {
-            store.dispatch('fetchAllProducts');
+            store.dispatch('FETCH_ALL_PRODUCTS');
         });
         const addToCart = ((data) =>{
             store.dispatch('ADD_TO_CART', {
@@ -94,15 +94,13 @@ export default {
 
         const currentPage = computed(() => {
             const page = Number(route.params.page);
-            return Number.isInteger(page) && page > 0 ? page : 1; // Если параметр некорректный, устанавливаем значение по умолчанию (1)
+            return Number.isInteger(page) && page > 0 ? page : 1;
         });
 
-        // Обновление параметра page в URL при изменении текущей страницы
         const updatePageInUrl = (page) => {
             router.replace({ params: { page: page.toString() } });
         };
 
-        // Обновление параметра page в URL при инициализации компонента
         updatePageInUrl(currentPage.value);
 
         return {

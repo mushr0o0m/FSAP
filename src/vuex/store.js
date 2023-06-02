@@ -6,17 +6,17 @@ const store = createStore({
     allProducts: [], // Состояние для хранения всех товаров
     cart: [], // Состояние для хранения товаров в карзине
     categories: [], // Состояние для хранения категорий товаров
-    itemsPerPage: 5,
+    itemsPerPage: 5, // Константа для количства страниц которые отбражаются на странице
   },
   mutations: {
-    setAllProducts(state, allProducts) {
+    SET_ALL_PRODUCTS(state, allProducts) {
       state.allProducts = allProducts.map((product) =>{
         product['quantity'] = product.quantity || 0;
         product['isFavorites'] = localStorage[product.id] === 'true';
         return product;
       });
     },
-    setCategories(state, categories) {
+    SET_CATEGORIES(state, categories) {
       state.categories = categories.map((x) => x[0].toUpperCase() + x.slice(1).toLowerCase());
     },
     SET_CART: (state, product) => {
@@ -79,16 +79,16 @@ const store = createStore({
       try {
         const response = await fetch('https://fakestoreapi.com/products/categories');
         const categories = await response.json();
-        commit('setCategories', categories);
+        commit('SET_CATEGORIES', categories);
       } catch (error) {
         console.error('Ошибка при получении категорий:', error);
       }
     },
-    async fetchAllProducts({ commit }) { 
+    async FETCH_ALL_PRODUCTS({ commit }) { 
       try {
         const response = await fetch('https://fakestoreapi.com/products');
         const allProducts = await response.json();
-        commit('setAllProducts', allProducts);
+        commit('SET_ALL_PRODUCTS', allProducts);
       } catch (error) {
         console.error('Ошибка при получении товаров:', error);
       }
@@ -102,11 +102,11 @@ const store = createStore({
     }
   },
   getters: {
-    getProductById: (state) => (id) => {
+    GET_PRODUCT_BY_ID: (state) => (id) => {
       console.log(state.allProducts)
       return state.allProducts.find((product) => product.id === id);
     },
-    getAllProducts: (state) => {
+    GET_ALL_PRODUCTS: (state) => {
       return state.allProducts;
     },
     GET_CART: (state) =>{

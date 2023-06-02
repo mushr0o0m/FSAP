@@ -80,9 +80,9 @@ export default {
     
     onBeforeMount(() => {
       console.log('hi')
-      store.dispatch('fetchAllProducts');
+      store.dispatch('FETCH_ALL_PRODUCTS');
     });
-    const product = computed(() => store.getters.getProductById(id));
+    const product = computed(() => store.getters.GET_PRODUCT_BY_ID(id));
     const onImageLoad = () => {
       isImageLoading.value = false;
     };

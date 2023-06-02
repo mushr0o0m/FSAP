@@ -160,7 +160,7 @@ export default {
         router.push('/');
     });
     const toFilterProducts = computed(() => {
-      let allProducts = store.getters.getAllProducts;
+      let allProducts = store.getters.GET_ALL_PRODUCTS;
 
       if (filterParams.value.isFavoritesOnly) {
         allProducts = allProducts.filter((item) => item.isFavorites);
