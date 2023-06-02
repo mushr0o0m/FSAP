@@ -6,6 +6,7 @@ const store = createStore({
     allProducts: [], // Состояние для хранения всех товаров
     cart: [], // Состояние для хранения товаров в карзине
     categories: [], // Состояние для хранения категорий товаров
+    itemsPerPage: 5,
   },
   mutations: {
     setAllProducts(state, allProducts) {
@@ -92,26 +93,6 @@ const store = createStore({
         console.error('Ошибка при получении товаров:', error);
       }
     },
-    // async fetchProducts({ commit }) {
-    //   try {
-    //     const response = await fetch('https://fakestoreapi.com/products?limit=10');
-    //     const products = await response.json();
-    //     commit('setProducts', products);
-    //   } catch (error) {
-    //     console.error('Ошибка при получении всех товаров:', error);
-    //   }
-    // },
-    // async fetchNextProducts({ commit, state }) {
-    //     try {
-    //       const offset = state.allProducts.length;
-    //       const response = await fetch(`https://fakestoreapi.com/products?limit=10&offset=${offset}`);
-    //       const nextProducts = await response.json();
-    //       const updatedProducts = [...state.allProducts, ...nextProducts];
-    //       commit('setAllProducts', updatedProducts);
-    //     } catch (error) {
-    //       console.error('Ошибка при получении следующих товаров:', error);
-    //     }
-    // },
     ADD_TO_CART({commit}, product){
       commit('SET_CART', product.data);
     },
@@ -148,7 +129,10 @@ const store = createStore({
         return id === cartItem.id;
       });
       return cartItem[0];
-    }
+    },
+    GET_ITEMS_PER_PAGE: (state) =>{
+      return state.itemsPerPage;
+    },
   }
 });
 

@@ -5,7 +5,7 @@ import CatalogItemPage from '@/components/CatalogItemPage.vue';
 
 const routes = [
   {
-    path: '/',
+    path: '/:page?',
     name: 'catalog',
     component: Catalog,
     props: true,
